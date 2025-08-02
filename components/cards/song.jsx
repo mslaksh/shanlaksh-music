@@ -6,11 +6,14 @@ import { useContext } from "react";
 import { MusicContext } from "@/hooks/use-context";
 import { IoPlay } from "react-icons/io5";
 
-// ✅ Function to decode HTML entities
-function decodeHtml(html) {
-  const txt = document.createElement("textarea");
-  txt.innerHTML = html;
-  return txt.value;
+// ✅ Safe for SSR: doesn't use `document`
+function decodeHtml(str) {
+  return str
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
 }
 
 export default function SongCard({ title, image, artist, id, desc }) {
@@ -67,9 +70,7 @@ export default function SongCard({ title, image, artist, id, desc }) {
         )}
 
         {desc && (
-          <p className="text-xs text-muted-foreground">
-            {desc.slice(0, 30)}
-          </p>
+          <p className="text-xs text-muted-foreground">{desc.slice(0, 30)}</p>
         )}
 
         {artist ? (
